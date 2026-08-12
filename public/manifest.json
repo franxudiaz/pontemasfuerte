@@ -1,0 +1,16 @@
+{
+  "name": "COMMANDO FIT - Entrenamiento Táctico",
+  "short_name": "COMMANDO FIT",
+  "description": "Aplicación táctica de entrenamiento militar con circuitos, instructor de voz e ilustraciones de IA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070a07",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
