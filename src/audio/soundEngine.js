@@ -1,10 +1,12 @@
-// Web Audio API & Speech Synthesizer for Tactical Workout App
+// Web Audio API, Speech Synthesizer & Music Player for Tactical Workout App
 
 class TacticalSoundEngine {
   constructor() {
     this.audioCtx = null;
     this.soundEnabled = true;
     this.voiceEnabled = true;
+    this.musicAudio = null;
+    this.isMusicPlaying = false;
   }
 
   initAudio() {
@@ -85,6 +87,52 @@ class TacticalSoundEngine {
     } catch (e) {
       console.warn('Speech error:', e);
     }
+  }
+
+  // Tactical Background Music Player ("Señor, dame paciencia!.mp3")
+  initMusic() {
+    if (!this.musicAudio) {
+      this.musicAudio = new Audio('/music.mp3');
+      this.musicAudio.loop = true;
+      this.musicAudio.volume = 0.7;
+
+      this.musicAudio.onended = () => {
+        this.isMusicPlaying = false;
+      };
+    }
+  }
+
+  playMusic() {
+    this.initMusic();
+    if (this.musicAudio) {
+      this.musicAudio.play().then(() => {
+        this.isMusicPlaying = true;
+      }).catch(err => console.warn('Music play blocked:', err));
+    }
+  }
+
+  pauseMusic() {
+    if (this.musicAudio && !this.musicAudio.paused) {
+      this.musicAudio.pause();
+      this.isMusicPlaying = false;
+    }
+  }
+
+  stopMusic() {
+    if (this.musicAudio) {
+      this.musicAudio.pause();
+      this.musicAudio.currentTime = 0;
+      this.isMusicPlaying = false;
+    }
+  }
+
+  toggleMusic() {
+    if (this.isMusicPlaying) {
+      this.pauseMusic();
+    } else {
+      this.playMusic();
+    }
+    return this.isMusicPlaying;
   }
 }
 

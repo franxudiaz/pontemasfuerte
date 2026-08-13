@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, SkipForward, SkipBack, X, Check, CheckSquare, ListChecks, ShieldAlert, Zap, Clock } from 'lucide-react';
+import { Play, Pause, Square, SkipForward, SkipBack, X, Check, ListChecks, ShieldAlert, Zap, Clock, Music, Volume2 } from 'lucide-react';
 import { EXERCISES } from '../data/workoutsData';
 import { soundEngine } from '../audio/soundEngine';
 
@@ -9,6 +9,9 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
   const [currentStationIdx, setCurrentStationIdx] = useState(0);
   const [completedStations, setCompletedStations] = useState({}); // { [stationId]: true }
   const [showChecklistDrawer, setShowChecklistDrawer] = useState(false);
+
+  // Background Music state
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Stopwatch / Timer for active station
   const [secondsElapsed, setSecondsElapsed] = useState(0);
@@ -23,6 +26,13 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
     setSecondsElapsed(0);
     setIsTimerRunning(true);
   }, [currentStationIdx]);
+
+  // Clean up music when leaving workout player
+  useEffect(() => {
+    return () => {
+      soundEngine.stopMusic();
+    };
+  }, []);
 
   // Stopwatch timer interval
   useEffect(() => {
@@ -40,6 +50,19 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
     };
   }, [isTimerRunning, currentStationIdx]);
 
+  // Music toggle handler
+  const handleToggleMusic = () => {
+    soundEngine.playClick();
+    const playing = soundEngine.toggleMusic();
+    setIsMusicPlaying(playing);
+  };
+
+  const handleStopMusic = () => {
+    soundEngine.playClick();
+    soundEngine.stopMusic();
+    setIsMusicPlaying(false);
+  };
+
   // Mark current station as completed and move to next
   const handleCompleteCurrentStation = () => {
     soundEngine.playClick();
@@ -54,6 +77,7 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
       setCurrentStationIdx(currentStationIdx + 1);
     } else {
       // All stations completed!
+      soundEngine.stopMusic();
       soundEngine.playVictory();
       soundEngine.speak('¡Entrenamiento completo finalizado con éxito!');
       onCompleteSession();
@@ -81,7 +105,6 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
   };
 
   const completedCount = Object.keys(completedStations).filter(k => completedStations[k]).length;
-  const progressPercent = Math.round((completedCount / stations.length) * 100);
 
   return (
     <div className="player-screen">
@@ -99,7 +122,7 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
           }}>
             {title} ({currentStationIdx + 1}/{stations.length})
           </span>
-          <h2 style={{ fontFamily: 'var(--font-hud)', fontSize: '1rem', color: '#fff', marginTop: 2 }}>
+          <h2 style={{ fontFamily: 'var(--font-hud)', fontSize: '0.95rem', color: '#fff', marginTop: 2 }}>
             ESTACIÓN {currentStationIdx + 1}: {currentStation.name}
           </h2>
         </div>
@@ -107,6 +130,7 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
         <button 
           onClick={() => {
             soundEngine.playClick();
+            soundEngine.stopMusic();
             onClose();
           }}
           style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
@@ -115,18 +139,18 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
         </button>
       </div>
 
-      {/* Routine Overall Progress Bar */}
+      {/* Routine Overall Progress & Music Bar */}
       <div style={{
-        background: 'rgba(0,0,0,0.8)',
+        background: 'rgba(0,0,0,0.85)',
         borderBottom: '1px solid var(--border-tactical)',
-        padding: '6px 16px',
+        padding: '6px 12px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justify: 'space-between',
         fontSize: '0.75rem',
         fontFamily: 'var(--font-mono)'
       }}>
-        <span>PROGRESO DEL CIRCUITO: {completedCount}/{stations.length}</span>
+        <span>PROGRESO: {completedCount}/{stations.length}</span>
         <button
           onClick={() => {
             soundEngine.playClick();
@@ -148,6 +172,85 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
           <ListChecks style={{ width: 14, height: 14 }} />
           {showChecklistDrawer ? 'OCULTAR LISTA' : 'VER RUTINA ENTERA'}
         </button>
+      </div>
+
+      {/* TACTICAL BACKGROUND MUSIC PLAYER BAR */}
+      <div style={{
+        background: isMusicPlaying ? 'rgba(34, 197, 94, 0.15)' : '#0f1711',
+        borderBottom: '1.5px solid var(--border-tactical-subtle)',
+        padding: '8px 12px',
+        display: 'flex',
+        alignItems: 'center',
+        justify: 'space-between',
+        gap: 8,
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+          <Music style={{ width: 18, height: 18, color: isMusicPlaying ? 'var(--accent-primary)' : 'var(--text-muted)', flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: 'var(--font-hud)', fontSize: '0.72rem', color: isMusicPlaying ? 'var(--accent-primary)' : '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              MOTIVACIÓN: "SEÑOR, DAME PACIENCIA"
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+              {isMusicPlaying ? '🎵 REPRODUCIENDO BANDA SONORA...' : 'PAUSADO (PULSA PLAY PARA REPRODUCIR)'}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button
+            onClick={handleToggleMusic}
+            style={{
+              background: isMusicPlaying ? 'var(--hud-amber)' : 'var(--accent-primary)',
+              color: '#000000',
+              border: 'none',
+              borderRadius: 4,
+              padding: '5px 10px',
+              fontFamily: 'var(--font-hud)',
+              fontSize: '0.72rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            {isMusicPlaying ? (
+              <>
+                <Pause style={{ width: 12, height: 12, fill: '#000' }} />
+                PAUSAR
+              </>
+            ) : (
+              <>
+                <Play style={{ width: 12, height: 12, fill: '#000' }} />
+                PLAY
+              </>
+            )}
+          </button>
+
+          {isMusicPlaying && (
+            <button
+              onClick={handleStopMusic}
+              style={{
+                background: 'rgba(239, 68, 68, 0.2)',
+                border: '1px solid var(--hud-red)',
+                color: 'var(--hud-red)',
+                borderRadius: 4,
+                padding: '5px 8px',
+                fontFamily: 'var(--font-hud)',
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+              title="Detener Música"
+            >
+              <Square style={{ width: 12, height: 12, fill: 'var(--hud-red)' }} />
+              PARAR
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Body */}
@@ -223,21 +326,21 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
               background: 'var(--bg-card)',
               border: '2px solid var(--border-tactical)',
               borderRadius: 10,
-              padding: '16px 24px',
+              padding: '14px 20px',
               textAlign: 'center',
               width: '100%',
               boxShadow: '0 0 20px rgba(0,0,0,0.6)'
             }}>
               <span style={{ 
                 fontFamily: 'var(--font-hud)', 
-                fontSize: '2rem', 
+                fontSize: '1.8rem', 
                 fontWeight: '900', 
                 color: '#fff',
                 letterSpacing: 1
               }}>
                 {currentStation.reps}
               </span>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--accent-primary)', marginTop: 4 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-primary)', marginTop: 2 }}>
                 OBJETIVO DE LA ESTACIÓN
               </div>
             </div>
@@ -246,28 +349,28 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
+              justify: 'center',
+              gap: 10,
               fontFamily: 'var(--font-hud)',
-              fontSize: '1.4rem',
+              fontSize: '1.3rem',
               color: 'var(--hud-amber)',
-              background: 'rgba(0,0,0,0.4)',
+              background: 'rgba(0,0,0,0.5)',
               border: '1px solid var(--border-tactical)',
-              padding: '6px 16px',
+              padding: '5px 14px',
               borderRadius: 6
             }}>
-              <Clock style={{ width: 18, height: 18 }} />
+              <Clock style={{ width: 16, height: 16 }} />
               <span>TIEMPO: {formatTime(secondsElapsed)}</span>
             </div>
 
             {/* Tactical Tip */}
             <div style={{ 
               background: 'rgba(0,0,0,0.5)', 
-              border: '1px solid var(--border-tactical)', 
-              padding: '10px 14px', 
+              border: '1px solid var(--border-tactical-subtle)', 
+              padding: '8px 12px', 
               borderRadius: 6,
               width: '100%',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               color: 'var(--text-muted)',
               display: 'flex',
               alignItems: 'center',
@@ -285,22 +388,22 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
                 background: 'linear-gradient(135deg, var(--accent-primary) 0%, #15803d 100%)',
                 color: '#000',
                 fontFamily: 'var(--font-hud)',
-                fontSize: '1.1rem',
+                fontSize: '1.05rem',
                 fontWeight: '900',
-                letterSpacing: 1,
-                padding: '16px',
+                letterSpacing: 0.5,
+                padding: '14px',
                 border: 'none',
                 borderRadius: 8,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: 10,
+                justify: 'center',
+                gap: 8,
                 boxShadow: '0 0 25px var(--accent-glow)',
                 marginTop: 'auto'
               }}
             >
-              <Check style={{ width: 24, height: 24, strokeWidth: 3 }} />
+              <Check style={{ width: 22, height: 22, strokeWidth: 3 }} />
               ESTACIÓN COMPLETADA (SIGUIENTE)
             </button>
           </>
