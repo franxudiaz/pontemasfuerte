@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation';
 import { MissionList } from './components/MissionList';
 import { ExerciseList } from './components/ExerciseList';
 import { RankProfile } from './components/RankProfile';
+import { RoutineDetailModal } from './components/RoutineDetailModal';
 import { WorkoutPlayer } from './components/WorkoutPlayer';
 import { MissionDebrief } from './components/MissionDebrief';
 import { MILITARY_RANKS, WORKOUT_GROUPS, EXERCISES } from './data/workoutsData';
@@ -44,7 +45,10 @@ export function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Active workout session state
+  // Routine selection & detail view state
+  const [selectedRoutineDetail, setSelectedRoutineDetail] = useState(null);
+
+  // Active live workout player state
   const [activeWorkoutSession, setActiveWorkoutSession] = useState(null);
   const [debriefSession, setDebriefSession] = useState(null);
 
@@ -61,19 +65,26 @@ export function App() {
 
   const userRank = getCurrentRank();
 
-  // Start a full multi-station routine
-  const handleStartRoutine = (routine) => {
+  // Step 1: Select routine and open Detail Screen
+  const handleSelectRoutine = (routine) => {
+    soundEngine.playClick();
+    setSelectedRoutineDetail(routine);
+  };
+
+  // Step 2: Press PLAY inside Detail Screen to start live session
+  const handleStartWorkout = (routine) => {
     soundEngine.playClick();
     soundEngine.playGoBeep();
+    setSelectedRoutineDetail(null); // Close detail modal
 
     setActiveWorkoutSession({
-      title: routine.title,
+      title: routine.title || `${routine.code} ${routine.levelTitle}`,
       xpReward: routine.xpReward,
       stations: routine.stations
     });
   };
 
-  // Start a single exercise as a 1-station session
+  // Start a single exercise directly as 1 station
   const handleSelectSingleExercise = (exercise) => {
     soundEngine.playClick();
     soundEngine.playGoBeep();
@@ -132,7 +143,7 @@ export function App() {
 
       <main className="content-area">
         {activeTab === 'missions' && (
-          <MissionList onStartRoutine={handleStartRoutine} />
+          <MissionList onSelectRoutine={handleSelectRoutine} />
         )}
 
         {activeTab === 'exercises' && (
@@ -153,7 +164,16 @@ export function App() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Workout Player Active Modal */}
+      {/* Routine Detail Screen Modal (Before pressing Play) */}
+      {selectedRoutineDetail && (
+        <RoutineDetailModal
+          routine={selectedRoutineDetail}
+          onClose={() => setSelectedRoutineDetail(null)}
+          onStartWorkout={handleStartWorkout}
+        />
+      )}
+
+      {/* Live Workout Player Active Modal */}
       {activeWorkoutSession && (
         <WorkoutPlayer
           workoutSession={activeWorkoutSession}

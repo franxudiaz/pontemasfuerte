@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { WORKOUT_GROUPS } from '../data/workoutsData';
-import { Play, Clock, Zap, Target, ChevronDown, ChevronUp, CheckSquare, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Clock, Zap, Target, ChevronDown, ChevronUp, CheckSquare, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { soundEngine } from '../audio/soundEngine';
 
-export const MissionList = ({ onStartRoutine }) => {
+export const MissionList = ({ onSelectRoutine }) => {
   const [filterCategory, setFilterCategory] = useState('all');
   
   // Track selected level index per workout group { [groupId]: levelIndex } (0: principiante, 1: intermedio, 2: master)
@@ -79,7 +79,7 @@ export const MissionList = ({ onStartRoutine }) => {
           CIRCUITOS Y NIVELES DE ENTRENAMIENTO
         </h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>
-          Selecciona tu grupo de entrenamiento y desliza horizontalmente 👈 👉 para cambiar de nivel.
+          Selecciona una rutina y entra para ver sus detalles y darle al play.
         </p>
       </div>
 
@@ -254,7 +254,7 @@ export const MissionList = ({ onStartRoutine }) => {
                           </span>
                         </div>
 
-                        {/* Expand / Collapse Checklist Drawer Button */}
+                        {/* Expand / Collapse Quick Preview */}
                         <button
                           onClick={() => {
                             soundEngine.playClick();
@@ -280,12 +280,12 @@ export const MissionList = ({ onStartRoutine }) => {
                         >
                           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <CheckSquare style={{ width: 16, height: 16, color: routine.badgeColor }} />
-                            {isExpanded ? 'OCULTAR DESGLOSE DE EJERCICIOS' : `VER DESGLOSE DE EJERCICIOS (${routine.stations.length})`}
+                            {isExpanded ? 'OCULTAR VISTA RÁPIDA' : `VER LISTA RÁPIDA (${routine.stations.length})`}
                           </span>
                           {isExpanded ? <ChevronUp style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
                         </button>
 
-                        {/* High-Contrast Checklist Drawer */}
+                        {/* Quick Checklist Drawer */}
                         {isExpanded && (
                           <div style={{
                             background: '#070c08',
@@ -293,28 +293,11 @@ export const MissionList = ({ onStartRoutine }) => {
                             borderRadius: 6,
                             padding: '10px',
                             marginTop: 8,
-                            maxHeight: '280px',
+                            maxHeight: '220px',
                             overflowY: 'auto',
                             width: '100%',
                             boxSizing: 'border-box'
                           }}>
-                            <div style={{
-                              fontFamily: 'var(--font-hud)',
-                              fontSize: '0.78rem',
-                              color: routine.badgeColor,
-                              marginBottom: 8,
-                              borderBottom: '1px solid rgba(255,255,255,0.15)',
-                              paddingBottom: 6,
-                              display: 'flex',
-                              justify: 'space-between',
-                              alignItems: 'center'
-                            }}>
-                              <span>LISTA DEL CIRCUITO {routine.levelTitle}</span>
-                              <span style={{ background: routine.badgeColor, color: '#000', padding: '2px 6px', borderRadius: 3, fontWeight: 'bold' }}>
-                                {routine.stations.length} PASOS
-                              </span>
-                            </div>
-
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                               {routine.stations.map((st, idx) => (
                                 <div 
@@ -323,11 +306,10 @@ export const MissionList = ({ onStartRoutine }) => {
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     gap: 10,
-                                    padding: '7px 10px',
+                                    padding: '6px 8px',
                                     background: idx % 2 === 0 ? '#121a14' : '#0d130e',
                                     borderRadius: 4,
-                                    borderLeft: `3px solid ${routine.badgeColor}`,
-                                    borderBottom: '1px solid rgba(255,255,255,0.05)'
+                                    borderLeft: `3px solid ${routine.badgeColor}`
                                   }}
                                 >
                                   <span style={{ 
@@ -338,14 +320,14 @@ export const MissionList = ({ onStartRoutine }) => {
                                     color: '#000000',
                                     padding: '2px 6px',
                                     borderRadius: 3,
-                                    minWidth: 26,
+                                    minWidth: 24,
                                     textAlign: 'center'
                                   }}>
                                     {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                                   </span>
                                   <span style={{ 
                                     fontFamily: 'var(--font-body)', 
-                                    fontSize: '0.88rem', 
+                                    fontSize: '0.85rem', 
                                     fontWeight: '700',
                                     color: '#ffffff',
                                     flex: 1
@@ -358,16 +340,20 @@ export const MissionList = ({ onStartRoutine }) => {
                           </div>
                         )}
 
+                        {/* Select Routine & Open Detail View Button */}
                         <button 
                           className="mission-btn"
-                          onClick={() => onStartRoutine(routine)}
+                          onClick={() => {
+                            soundEngine.playClick();
+                            onSelectRoutine(routine);
+                          }}
                           style={{
                             background: `linear-gradient(135deg, ${routine.badgeColor} 0%, #15803d 100%)`,
                             marginTop: 10
                           }}
                         >
-                          <Play style={{ width: 18, height: 18, fill: '#000000' }} />
-                          INICIAR NIVEL {routine.levelTitle}
+                          <Eye style={{ width: 18, height: 18, strokeWidth: 2.5 }} />
+                          SELECCIONAR Y VER DETALLES
                         </button>
                       </div>
                     </div>
