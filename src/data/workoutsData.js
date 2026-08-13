@@ -152,6 +152,8 @@ export const WORKOUT_GROUPS = [
     title: 'FULL BODY',
     badge: '🔥',
     category: 'full_body',
+    targetMuscles: 'Cuerpo Completo, Pecho, Piernas, Core, Espalda, Cardio',
+    muscleImage: '/images/muscle_full_body.png',
     description: 'Circuito militar completo de 19 estaciones. Adaptado en 3 niveles de resistencia de combate.',
     levels: [
       {
@@ -165,6 +167,8 @@ export const WORKOUT_GROUPS = [
         xpReward: 350,
         difficultyTag: 'INICIACIÓN',
         description: 'Volumen moderado ideal para aclimatación táctica y técnica de combate.',
+        muscleImage: '/images/muscle_full_body.png',
+        targetMuscles: 'Cuerpo Completo: Pecho, Piernas, Core, Brazos',
         stations: createFullBodyStations(10, 20, 25, 25, 25)
       },
       {
@@ -178,6 +182,8 @@ export const WORKOUT_GROUPS = [
         xpReward: 500,
         difficultyTag: 'COMBATE',
         description: 'Exigencia militar media. Incremento de volumen para operadores experimentados.',
+        muscleImage: '/images/muscle_full_body.png',
+        targetMuscles: 'Cuerpo Completo: Pecho, Piernas, Core, Brazos',
         stations: createFullBodyStations(20, 40, 50, 50, 50)
       },
       {
@@ -191,6 +197,8 @@ export const WORKOUT_GROUPS = [
         xpReward: 750,
         difficultyTag: 'SPECOPS ÉLITE',
         description: 'Volumen máximo de supervivencia. Solo para operadores de fuerzas especiales.',
+        muscleImage: '/images/muscle_full_body.png',
+        targetMuscles: 'Cuerpo Completo: Pecho, Piernas, Core, Brazos',
         stations: createFullBodyStations(30, 60, 75, 75, 75)
       }
     ]
@@ -200,6 +208,8 @@ export const WORKOUT_GROUPS = [
     title: 'TREN SUPERIOR',
     badge: '🛡️',
     category: 'tren_superior',
+    targetMuscles: 'Pecho, Hombros, Tríceps, Espalda, Antebrazos',
+    muscleImage: '/images/muscle_upper_body.png',
     description: 'Protocolo de empuje y fuerza de brazos en 3 niveles de exigencia militar.',
     levels: [
       {
@@ -212,6 +222,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 20,
         xpReward: 300,
         difficultyTag: 'INICIACIÓN',
+        muscleImage: '/images/muscle_upper_body.png',
+        targetMuscles: 'Pecho, Hombros, Tríceps, Espalda',
         stations: [
           { id: 1, name: '20 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '20 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -235,6 +247,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 30,
         xpReward: 450,
         difficultyTag: 'COMBATE',
+        muscleImage: '/images/muscle_upper_body.png',
+        targetMuscles: 'Pecho, Hombros, Tríceps, Espalda',
         stations: [
           { id: 1, name: '35 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '35 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -258,6 +272,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 40,
         xpReward: 650,
         difficultyTag: 'SPECOPS ÉLITE',
+        muscleImage: '/images/muscle_upper_body.png',
+        targetMuscles: 'Pecho, Hombros, Tríceps, Espalda',
         stations: [
           { id: 1, name: '50 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '50 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -278,6 +294,8 @@ export const WORKOUT_GROUPS = [
     title: 'TREN INFERIOR',
     badge: '🥾',
     category: 'tren_inferior',
+    targetMuscles: 'Cuádriceps, Glúteos, Isquios, Gemelos, Potencia de Zancada',
+    muscleImage: '/images/muscle_lower_body.png',
     description: 'Potencia de piernas y resistencia de zancada en 3 niveles tácticos.',
     levels: [
       {
@@ -290,6 +308,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 20,
         xpReward: 300,
         difficultyTag: 'INICIACIÓN',
+        muscleImage: '/images/muscle_lower_body.png',
+        targetMuscles: 'Cuádriceps, Glúteos, Isquios, Gemelos',
         stations: [
           { id: 1, name: '30 SENTADILLAS', exerciseId: 'squats', reps: '30 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -312,6 +332,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 30,
         xpReward: 480,
         difficultyTag: 'COMBATE',
+        muscleImage: '/images/muscle_lower_body.png',
+        targetMuscles: 'Cuádriceps, Glúteos, Isquios, Gemelos',
         stations: [
           { id: 1, name: '50 SENTADILLAS', exerciseId: 'squats', reps: '50 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -334,6 +356,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 40,
         xpReward: 650,
         difficultyTag: 'SPECOPS ÉLITE',
+        muscleImage: '/images/muscle_lower_body.png',
+        targetMuscles: 'Cuádriceps, Glúteos, Isquios, Gemelos',
         stations: [
           { id: 1, name: '75 SENTADILLAS', exerciseId: 'squats', reps: '75 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -353,6 +377,8 @@ export const WORKOUT_GROUPS = [
     title: 'CORE BLINDADO',
     badge: '🔰',
     category: 'core',
+    targetMuscles: 'Abdomen, Oblicuos, Zona Lumbar, Core Central',
+    muscleImage: '/images/muscle_core.png',
     description: 'Blindaje abdominal y potencia lumbar en 3 niveles de exigencia.',
     levels: [
       {
@@ -365,6 +391,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 18,
         xpReward: 280,
         difficultyTag: 'INICIACIÓN',
+        muscleImage: '/images/muscle_core.png',
+        targetMuscles: 'Abdomen, Oblicuos, Zona Lumbar',
         stations: [
           { id: 1, name: '30 ABDOMINALES', exerciseId: 'situps', reps: '30 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -386,6 +414,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 25,
         xpReward: 400,
         difficultyTag: 'COMBATE',
+        muscleImage: '/images/muscle_core.png',
+        targetMuscles: 'Abdomen, Oblicuos, Zona Lumbar',
         stations: [
           { id: 1, name: '50 ABDOMINALES', exerciseId: 'situps', reps: '50 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
@@ -407,6 +437,8 @@ export const WORKOUT_GROUPS = [
         durationMinutes: 35,
         xpReward: 600,
         difficultyTag: 'SPECOPS ÉLITE',
+        muscleImage: '/images/muscle_core.png',
+        targetMuscles: 'Abdomen, Oblicuos, Zona Lumbar',
         stations: [
           { id: 1, name: '75 ABDOMINALES', exerciseId: 'situps', reps: '75 REPETICIONES' },
           { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
