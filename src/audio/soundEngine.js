@@ -7,6 +7,7 @@ class TacticalSoundEngine {
     this.voiceEnabled = true;
     this.musicAudio = null;
     this.isMusicPlaying = false;
+    this.onMusicStateChange = null;
   }
 
   initAudio() {
@@ -96,18 +97,37 @@ class TacticalSoundEngine {
       this.musicAudio.loop = true;
       this.musicAudio.volume = 0.7;
 
-      this.musicAudio.onended = () => {
+      this.musicAudio.addEventListener('play', () => {
+        this.isMusicPlaying = true;
+        if (this.onMusicStateChange) this.onMusicStateChange(true);
+      });
+
+      this.musicAudio.addEventListener('pause', () => {
         this.isMusicPlaying = false;
-      };
+        if (this.onMusicStateChange) this.onMusicStateChange(false);
+      });
+
+      this.musicAudio.addEventListener('ended', () => {
+        this.isMusicPlaying = false;
+        if (this.onMusicStateChange) this.onMusicStateChange(false);
+      });
     }
   }
 
   playMusic() {
     this.initMusic();
     if (this.musicAudio) {
-      this.musicAudio.play().then(() => {
-        this.isMusicPlaying = true;
-      }).catch(err => console.warn('Music play blocked:', err));
+      const promise = this.musicAudio.play();
+      if (promise !== undefined) {
+        promise.then(() => {
+          this.isMusicPlaying = true;
+          if (this.onMusicStateChange) this.onMusicStateChange(true);
+        }).catch(err => {
+          console.warn('Music play failed:', err);
+          this.isMusicPlaying = false;
+          if (this.onMusicStateChange) this.onMusicStateChange(false);
+        });
+      }
     }
   }
 
@@ -115,6 +135,7 @@ class TacticalSoundEngine {
     if (this.musicAudio && !this.musicAudio.paused) {
       this.musicAudio.pause();
       this.isMusicPlaying = false;
+      if (this.onMusicStateChange) this.onMusicStateChange(false);
     }
   }
 
@@ -123,6 +144,7 @@ class TacticalSoundEngine {
       this.musicAudio.pause();
       this.musicAudio.currentTime = 0;
       this.isMusicPlaying = false;
+      if (this.onMusicStateChange) this.onMusicStateChange(false);
     }
   }
 
@@ -132,7 +154,6 @@ class TacticalSoundEngine {
     } else {
       this.playMusic();
     }
-    return this.isMusicPlaying;
   }
 }
 

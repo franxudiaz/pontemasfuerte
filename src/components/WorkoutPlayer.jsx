@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, SkipForward, SkipBack, X, Check, ListChecks, ShieldAlert, Zap, Clock, Music, Volume2 } from 'lucide-react';
+import { Play, Pause, Square, SkipForward, SkipBack, X, Check, ListChecks, ShieldAlert, Zap, Clock, Music, Volume2, RotateCcw } from 'lucide-react';
 import { EXERCISES } from '../data/workoutsData';
 import { soundEngine } from '../audio/soundEngine';
 
@@ -10,8 +10,8 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
   const [completedStations, setCompletedStations] = useState({}); // { [stationId]: true }
   const [showChecklistDrawer, setShowChecklistDrawer] = useState(false);
 
-  // Background Music state
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  // Synchronized Background Music state
+  const [isMusicPlaying, setIsMusicPlaying] = useState(soundEngine.isMusicPlaying);
 
   // Stopwatch / Timer for active station
   const [secondsElapsed, setSecondsElapsed] = useState(0);
@@ -21,18 +21,23 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
   const currentStation = stations[currentStationIdx];
   const exerciseObj = EXERCISES.find(e => e.id === currentStation.exerciseId) || EXERCISES[0];
 
+  // Sync with soundEngine music state listener
+  useEffect(() => {
+    soundEngine.onMusicStateChange = (playing) => {
+      setIsMusicPlaying(playing);
+    };
+
+    return () => {
+      soundEngine.onMusicStateChange = null;
+      soundEngine.stopMusic();
+    };
+  }, []);
+
   // Reset timer on station change
   useEffect(() => {
     setSecondsElapsed(0);
     setIsTimerRunning(true);
   }, [currentStationIdx]);
-
-  // Clean up music when leaving workout player
-  useEffect(() => {
-    return () => {
-      soundEngine.stopMusic();
-    };
-  }, []);
 
   // Stopwatch timer interval
   useEffect(() => {
@@ -50,17 +55,20 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
     };
   }, [isTimerRunning, currentStationIdx]);
 
-  // Music toggle handler
-  const handleToggleMusic = () => {
+  // Music toggle handlers
+  const handlePlayMusic = () => {
     soundEngine.playClick();
-    const playing = soundEngine.toggleMusic();
-    setIsMusicPlaying(playing);
+    soundEngine.playMusic();
+  };
+
+  const handlePauseMusic = () => {
+    soundEngine.playClick();
+    soundEngine.pauseMusic();
   };
 
   const handleStopMusic = () => {
     soundEngine.playClick();
     soundEngine.stopMusic();
-    setIsMusicPlaying(false);
   };
 
   // Mark current station as completed and move to next
@@ -139,7 +147,7 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
         </button>
       </div>
 
-      {/* Routine Overall Progress & Music Bar */}
+      {/* Routine Overall Progress Bar */}
       <div style={{
         background: 'rgba(0,0,0,0.85)',
         borderBottom: '1px solid var(--border-tactical)',
@@ -192,20 +200,65 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
               MOTIVACIÓN: "SEÑOR, DAME PACIENCIA"
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-              {isMusicPlaying ? '🎵 REPRODUCIENDO BANDA SONORA...' : 'PAUSADO (PULSA PLAY PARA REPRODUCIR)'}
+              {isMusicPlaying ? '🎵 REPRODUCIENDO...' : 'PAUSADO (PULSA PLAY PARA REPRODUCIR)'}
             </div>
           </div>
         </div>
 
+        {/* Music Player Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {isMusicPlaying ? (
+            <button
+              onClick={handlePauseMusic}
+              style={{
+                background: 'var(--hud-amber)',
+                color: '#000000',
+                border: 'none',
+                borderRadius: 4,
+                padding: '6px 10px',
+                fontFamily: 'var(--font-hud)',
+                fontSize: '0.72rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              <Pause style={{ width: 13, height: 13, fill: '#000' }} />
+              PAUSA
+            </button>
+          ) : (
+            <button
+              onClick={handlePlayMusic}
+              style={{
+                background: 'var(--accent-primary)',
+                color: '#000000',
+                border: 'none',
+                borderRadius: 4,
+                padding: '6px 10px',
+                fontFamily: 'var(--font-hud)',
+                fontSize: '0.72rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              <Play style={{ width: 13, height: 13, fill: '#000' }} />
+              PLAY
+            </button>
+          )}
+
           <button
-            onClick={handleToggleMusic}
+            onClick={handleStopMusic}
             style={{
-              background: isMusicPlaying ? 'var(--hud-amber)' : 'var(--accent-primary)',
-              color: '#000000',
-              border: 'none',
+              background: 'rgba(239, 68, 68, 0.25)',
+              border: '1px solid var(--hud-red)',
+              color: 'var(--hud-red)',
               borderRadius: 4,
-              padding: '5px 10px',
+              padding: '6px 8px',
               fontFamily: 'var(--font-hud)',
               fontSize: '0.72rem',
               fontWeight: 'bold',
@@ -214,42 +267,11 @@ export const WorkoutPlayer = ({ workoutSession, onClose, onCompleteSession }) =>
               alignItems: 'center',
               gap: 4
             }}
+            title="Detener y Reiniciar Audio"
           >
-            {isMusicPlaying ? (
-              <>
-                <Pause style={{ width: 12, height: 12, fill: '#000' }} />
-                PAUSAR
-              </>
-            ) : (
-              <>
-                <Play style={{ width: 12, height: 12, fill: '#000' }} />
-                PLAY
-              </>
-            )}
+            <Square style={{ width: 12, height: 12, fill: 'var(--hud-red)' }} />
+            STOP
           </button>
-
-          {isMusicPlaying && (
-            <button
-              onClick={handleStopMusic}
-              style={{
-                background: 'rgba(239, 68, 68, 0.2)',
-                border: '1px solid var(--hud-red)',
-                color: 'var(--hud-red)',
-                borderRadius: 4,
-                padding: '5px 8px',
-                fontFamily: 'var(--font-hud)',
-                fontSize: '0.72rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4
-              }}
-              title="Detener Música"
-            >
-              <Square style={{ width: 12, height: 12, fill: 'var(--hud-red)' }} />
-              PARAR
-            </button>
-          )}
         </div>
       </div>
 
