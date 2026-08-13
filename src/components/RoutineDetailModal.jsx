@@ -38,8 +38,8 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
         </button>
       </div>
 
-      {/* Body Content */}
-      <div className="player-body" style={{ gap: 12 }}>
+      {/* Body Content - Single Fluid Scroll Area */}
+      <div className="player-body" style={{ gap: 12, paddingBottom: '90px' }}>
         {/* Tactical Muscle Map Image Header */}
         {routine.muscleImage && (
           <div style={{
@@ -125,7 +125,7 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
           </div>
         </div>
 
-        {/* Full Circuit Breakdown List */}
+        {/* Full Circuit Breakdown List - FULL UNRESTRICTED VIEW (NO INNER SCROLLBAR) */}
         <div style={{
           background: '#070c08',
           border: `1.5px solid ${routine.badgeColor}`,
@@ -136,22 +136,22 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
         }}>
           <div style={{
             fontFamily: 'var(--font-hud)',
-            fontSize: '0.78rem',
+            fontSize: '0.8rem',
             color: routine.badgeColor,
-            marginBottom: 8,
+            marginBottom: 10,
             borderBottom: '1px solid rgba(255,255,255,0.15)',
-            paddingBottom: 4,
+            paddingBottom: 6,
             display: 'flex',
             justify: 'space-between',
             alignItems: 'center'
           }}>
-            <span>DESGLOSE DEL CIRCUITO COMPLETO</span>
+            <span>DESGLOSE COMPLETO DEL CIRCUITO</span>
             <span style={{ background: routine.badgeColor, color: '#000', padding: '2px 6px', borderRadius: 3, fontWeight: 'bold' }}>
-              {routine.stations.length} PASOS
+              {routine.stations.length} ESTACIONES
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: '200px', overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {routine.stations.map((st, idx) => {
               const fullEx = EXERCISES.find(e => e.id === st.exerciseId);
               return (
@@ -160,34 +160,34 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: 8,
-                    padding: '6px 8px',
+                    gap: 10,
+                    padding: '8px 10px',
                     background: idx % 2 === 0 ? '#121a14' : '#0d130e',
-                    borderRadius: 4,
-                    borderLeft: `3px solid ${routine.badgeColor}`,
+                    borderRadius: 6,
+                    borderLeft: `4px solid ${routine.badgeColor}`,
                     borderBottom: '1px solid rgba(255,255,255,0.05)'
                   }}
                 >
                   <span style={{ 
                     fontFamily: 'var(--font-mono)', 
-                    fontSize: '0.72rem', 
+                    fontSize: '0.75rem', 
                     fontWeight: 'bold',
                     background: routine.badgeColor,
                     color: '#000000',
-                    padding: '2px 5px',
-                    borderRadius: 3,
-                    minWidth: 24,
+                    padding: '3px 6px',
+                    borderRadius: 4,
+                    minWidth: 28,
                     textAlign: 'center'
                   }}>
                     {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                   </span>
 
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', fontWeight: '700', color: '#ffffff' }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.88rem', fontWeight: '700', color: '#ffffff' }}>
                       {st.name}
                     </div>
                     {fullEx && (
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                         {fullEx.muscleGroup}
                       </div>
                     )}
@@ -197,8 +197,19 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
             })}
           </div>
         </div>
+      </div>
 
-        {/* Primary Action Button inside Detail Screen */}
+      {/* Sticky Bottom Action Bar - Always Accessible */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'linear-gradient(0deg, #040604 85%, transparent 100%)',
+        padding: '12px 14px',
+        zIndex: 60,
+        boxSizing: 'border-box'
+      }}>
         <button
           onClick={() => {
             soundEngine.playClick();
@@ -220,8 +231,7 @@ export const RoutineDetailModal = ({ routine, onClose, onStartWorkout }) => {
             alignItems: 'center',
             justify: 'center',
             gap: 8,
-            boxShadow: `0 0 20px ${routine.badgeColor}66`,
-            marginTop: 'auto'
+            boxShadow: `0 0 25px ${routine.badgeColor}66`
           }}
         >
           <Play style={{ width: 22, height: 22, fill: '#000000' }} />
