@@ -6,7 +6,7 @@ import { ExerciseList } from './components/ExerciseList';
 import { RankProfile } from './components/RankProfile';
 import { WorkoutPlayer } from './components/WorkoutPlayer';
 import { MissionDebrief } from './components/MissionDebrief';
-import { MILITARY_RANKS, WORKOUT_ROUTINES, EXERCISES } from './data/workoutsData';
+import { MILITARY_RANKS, WORKOUT_GROUPS, EXERCISES } from './data/workoutsData';
 import { soundEngine } from './audio/soundEngine';
 
 export function App() {

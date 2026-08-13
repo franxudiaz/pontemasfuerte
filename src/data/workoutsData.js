@@ -14,7 +14,7 @@ export const EXERCISES = [
     name: 'Burpees de Asalto',
     category: 'full_body',
     type: 'reps',
-    defaultReps: 25,
+    defaultReps: 20,
     image: '/images/burpees.png',
     muscleGroup: 'Cuerpo Completo, Cardio de Combate',
     difficulty: 'Avanzado',
@@ -26,18 +26,18 @@ export const EXERCISES = [
     tacticalTip: 'Máxima cadencia sin detener el movimiento.'
   },
   {
-    id: 'sprint_200m',
-    name: 'Carrera Táctica (200 Metros)',
+    id: 'sprint_100m',
+    name: 'Carrera Táctica (100 Metros)',
     category: 'cardio',
     type: 'distance',
-    defaultDistance: '200 METROS',
+    defaultDistance: '100 METROS',
     image: '/images/sprint.png',
     muscleGroup: 'Cardio, Potencia de Piernas, Capacidad Pulmonar',
-    difficulty: 'Intermedio',
+    difficulty: 'Básico',
     instructions: [
       'Sprint a máxima aceleración táctica en línea recta o circuito.',
-      'Mantén la zancada amplia y los brazos z braceando a 90°.',
-      'Controla la respiración en los últimos 50 metros.'
+      'Mantén la zancada amplia y los brazos braceando a 90°.',
+      'Controla la respiración constante.'
     ],
     tacticalTip: 'Visualiza una evacuación bajo fuego hostil. ¡Velocidad pura!'
   },
@@ -46,7 +46,7 @@ export const EXERCISES = [
     name: 'Flexiones Tácticas',
     category: 'tren_superior',
     type: 'reps',
-    defaultReps: 50,
+    defaultReps: 30,
     image: '/images/pushups.png',
     muscleGroup: 'Pecho, Tríceps, Hombros',
     difficulty: 'Intermedio',
@@ -62,7 +62,7 @@ export const EXERCISES = [
     name: 'Sentadillas de Combate',
     category: 'tren_inferior',
     type: 'reps',
-    defaultReps: 75,
+    defaultReps: 50,
     image: '/images/squats.png',
     muscleGroup: 'Cuádriceps, Glúteos, Isquios',
     difficulty: 'Intermedio',
@@ -78,7 +78,7 @@ export const EXERCISES = [
     name: 'Paso Granjero Táctico',
     category: 'full_body',
     type: 'reps',
-    defaultReps: 75, // 75 Pasos o Metros
+    defaultReps: 50,
     image: '/images/farmers_walk.png',
     muscleGroup: 'Antebrazos, Agarre, Trapecios, Core',
     difficulty: 'Avanzado',
@@ -94,7 +94,7 @@ export const EXERCISES = [
     name: 'Abdominales Tácticos',
     category: 'core',
     type: 'reps',
-    defaultReps: 75,
+    defaultReps: 50,
     image: '/images/situps.png',
     muscleGroup: 'Abdomen, Core Central, Hip Flexors',
     difficulty: 'Intermedio',
@@ -123,103 +123,301 @@ export const EXERCISES = [
   }
 ];
 
-export const WORKOUT_ROUTINES = [
+// Helper to generate full body stations array based on rep multipliers
+const createFullBodyStations = (burpees, flexiones, sentadillas, granjero, abdominales) => [
+  { id: 1, name: `${burpees} BURPEES`, exerciseId: 'burpees', reps: `${burpees} REPETICIONES` },
+  { id: 2, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 3, name: `${flexiones} FLEXIONES`, exerciseId: 'pushups', reps: `${flexiones} REPETICIONES` },
+  { id: 4, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 5, name: `${sentadillas} SENTADILLAS`, exerciseId: 'squats', reps: `${sentadillas} REPETICIONES` },
+  { id: 6, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 7, name: `${granjero} PASO GRANJERO`, exerciseId: 'farmers_walk', reps: `${granjero} PASOS / METROS` },
+  { id: 8, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 9, name: `${abdominales} ABDOMINALES`, exerciseId: 'situps', reps: `${abdominales} REPETICIONES` },
+  { id: 10, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 11, name: `${abdominales} ABDOMINALES`, exerciseId: 'situps', reps: `${abdominales} REPETICIONES` },
+  { id: 12, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 13, name: `${granjero} PASO GRANJERO`, exerciseId: 'farmers_walk', reps: `${granjero} PASOS / METROS` },
+  { id: 14, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 15, name: `${sentadillas} SENTADILLAS`, exerciseId: 'squats', reps: `${sentadillas} REPETICIONES` },
+  { id: 16, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 17, name: `${flexiones} FLEXIONES`, exerciseId: 'pushups', reps: `${flexiones} REPETICIONES` },
+  { id: 18, name: '100 METROS', exerciseId: 'sprint_100m', reps: '100 METROS SPRINT' },
+  { id: 19, name: `${burpees} BURPEES`, exerciseId: 'burpees', reps: `${burpees} REPETICIONES` }
+];
+
+export const WORKOUT_GROUPS = [
   {
-    id: 'full_body_official',
-    title: 'ENTRENAMIENTO FULL BODY',
-    code: 'FB-OFFICIAL-19',
-    category: 'full_body',
-    difficulty: 'EXTREMO',
-    durationMinutes: 45,
-    xpReward: 600,
-    description: 'Circuito militar oficial de 19 estaciones de alta intensidad. Resistencia, fuerza y potencia de combate.',
+    id: 'full_body',
+    title: 'FULL BODY',
     badge: '🔥',
-    stations: [
-      { id: 1, name: '25 BURPEES', exerciseId: 'burpees', reps: '25 REPETICIONES' },
-      { id: 2, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 3, name: '50 FLEXIONES', exerciseId: 'pushups', reps: '50 REPETICIONES' },
-      { id: 4, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 5, name: '75 SENTADILLAS', exerciseId: 'squats', reps: '75 REPETICIONES' },
-      { id: 6, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 7, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS / METROS' },
-      { id: 8, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 9, name: '75 ABDOMINALES', exerciseId: 'situps', reps: '75 REPETICIONES' },
-      { id: 10, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 11, name: '75 ABDOMINALES', exerciseId: 'situps', reps: '75 REPETICIONES' },
-      { id: 12, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 13, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS / METROS' },
-      { id: 14, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 15, name: '75 SENTADILLAS', exerciseId: 'squats', reps: '75 REPETICIONES' },
-      { id: 16, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 17, name: '50 FLEXIONES', exerciseId: 'pushups', reps: '50 REPETICIONES' },
-      { id: 18, name: '200 METROS', exerciseId: 'sprint_200m', reps: '200 METROS SPRINT' },
-      { id: 19, name: '25 BURPEES', exerciseId: 'burpees', reps: '25 REPETICIONES' }
+    category: 'full_body',
+    description: 'Circuito militar completo de 19 estaciones. Adaptado en 3 niveles de resistencia de combate.',
+    levels: [
+      {
+        id: 'full_body_principiante',
+        levelKey: 'principiante',
+        levelTitle: 'PRINCIPIANTE',
+        code: 'FB-PRINCIPIANTE-19',
+        badgeColor: '#22c55e',
+        badgeIcon: '🟢',
+        durationMinutes: 30,
+        xpReward: 350,
+        difficultyTag: 'INICIACIÓN',
+        description: 'Volumen moderado ideal para aclimatación táctica y técnica de combate.',
+        stations: createFullBodyStations(10, 20, 25, 25, 25)
+      },
+      {
+        id: 'full_body_intermedio',
+        levelKey: 'intermedio',
+        levelTitle: 'INTERMEDIO',
+        code: 'FB-INTERMEDIO-19',
+        badgeColor: '#f59e0b',
+        badgeIcon: '🟡',
+        durationMinutes: 40,
+        xpReward: 500,
+        difficultyTag: 'COMBATE',
+        description: 'Exigencia militar media. Incremento de volumen para operadores experimentados.',
+        stations: createFullBodyStations(20, 40, 50, 50, 50)
+      },
+      {
+        id: 'full_body_master',
+        levelKey: 'master',
+        levelTitle: 'MASTER',
+        code: 'FB-MASTER-19',
+        badgeColor: '#ef4444',
+        badgeIcon: '🔴',
+        durationMinutes: 50,
+        xpReward: 750,
+        difficultyTag: 'SPECOPS ÉLITE',
+        description: 'Volumen máximo de supervivencia. Solo para operadores de fuerzas especiales.',
+        stations: createFullBodyStations(30, 60, 75, 75, 75)
+      }
     ]
   },
   {
-    id: 'tren_superior_routine',
-    title: 'ENTRENAMIENTO TREN SUPERIOR',
-    code: 'UPPER-BLAST-10',
-    category: 'tren_superior',
-    difficulty: 'ALTA INTENSIDAD',
-    durationMinutes: 30,
-    xpReward: 450,
-    description: 'Circuito táctico enfocado en potencia de empuje, fuerza de brazos y resistencia de hombros.',
+    id: 'tren_superior',
+    title: 'TREN SUPERIOR',
     badge: '🛡️',
-    stations: [
-      { id: 1, name: '40 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '40 REPETICIONES' },
-      { id: 2, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 3, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
-      { id: 4, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 5, name: '30 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '30 REPETICIONES' },
-      { id: 6, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 7, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
-      { id: 8, name: '20 FELEXIONES BURPEE', exerciseId: 'burpees', reps: '20 REPETICIONES' },
-      { id: 9, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 10, name: '40 FLEXIONES FINAL', exerciseId: 'pushups', reps: '40 REPETICIONES' }
+    category: 'tren_superior',
+    description: 'Protocolo de empuje y fuerza de brazos en 3 niveles de exigencia militar.',
+    levels: [
+      {
+        id: 'upper_principiante',
+        levelKey: 'principiante',
+        levelTitle: 'PRINCIPIANTE',
+        code: 'UP-PRINCIPIANTE-10',
+        badgeColor: '#22c55e',
+        badgeIcon: '🟢',
+        durationMinutes: 20,
+        xpReward: 300,
+        difficultyTag: 'INICIACIÓN',
+        stations: [
+          { id: 1, name: '20 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '20 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '25 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '25 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '15 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '15 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '25 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '25 PASOS' },
+          { id: 8, name: '10 BURPEES', exerciseId: 'burpees', reps: '10 REPETICIONES' },
+          { id: 9, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 10, name: '20 FLEXIONES FINAL', exerciseId: 'pushups', reps: '20 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'upper_intermedio',
+        levelKey: 'intermedio',
+        levelTitle: 'INTERMEDIO',
+        code: 'UP-INTERMEDIO-10',
+        badgeColor: '#f59e0b',
+        badgeIcon: '🟡',
+        durationMinutes: 30,
+        xpReward: 450,
+        difficultyTag: 'COMBATE',
+        stations: [
+          { id: 1, name: '35 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '35 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '25 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '25 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
+          { id: 8, name: '18 BURPEES', exerciseId: 'burpees', reps: '18 REPETICIONES' },
+          { id: 9, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 10, name: '35 FLEXIONES FINAL', exerciseId: 'pushups', reps: '35 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'upper_master',
+        levelKey: 'master',
+        levelTitle: 'MASTER',
+        code: 'UP-MASTER-10',
+        badgeColor: '#ef4444',
+        badgeIcon: '🔴',
+        durationMinutes: 40,
+        xpReward: 650,
+        difficultyTag: 'SPECOPS ÉLITE',
+        stations: [
+          { id: 1, name: '50 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '50 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '40 FLEXIONES TÁCTICAS', exerciseId: 'pushups', reps: '40 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS' },
+          { id: 8, name: '25 BURPEES', exerciseId: 'burpees', reps: '25 REPETICIONES' },
+          { id: 9, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 10, name: '50 FLEXIONES FINAL', exerciseId: 'pushups', reps: '50 REPETICIONES' }
+        ]
+      }
     ]
   },
   {
-    id: 'tren_inferior_routine',
-    title: 'ENTRENAMIENTO TREN INFERIOR',
-    code: 'LOWER-POWER-10',
-    category: 'tren_inferior',
-    difficulty: 'RESISTENCIA',
-    durationMinutes: 32,
-    xpReward: 480,
-    description: 'Circuito militar de potencia en piernas, resistencia de cuádriceps y zancadas operativas.',
+    id: 'tren_inferior',
+    title: 'TREN INFERIOR',
     badge: '🥾',
-    stations: [
-      { id: 1, name: '60 SENTADILLAS', exerciseId: 'squats', reps: '60 REPETICIONES' },
-      { id: 2, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 3, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
-      { id: 4, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 5, name: '60 SENTADILLAS', exerciseId: 'squats', reps: '60 REPETICIONES' },
-      { id: 6, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 7, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
-      { id: 8, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 9, name: '60 SENTADILLAS FINAL', exerciseId: 'squats', reps: '60 REPETICIONES' }
+    category: 'tren_inferior',
+    description: 'Potencia de piernas y resistencia de zancada en 3 niveles tácticos.',
+    levels: [
+      {
+        id: 'lower_principiante',
+        levelKey: 'principiante',
+        levelTitle: 'PRINCIPIANTE',
+        code: 'LOW-PRINCIPIANTE-09',
+        badgeColor: '#22c55e',
+        badgeIcon: '🟢',
+        durationMinutes: 20,
+        xpReward: 300,
+        difficultyTag: 'INICIACIÓN',
+        stations: [
+          { id: 1, name: '30 SENTADILLAS', exerciseId: 'squats', reps: '30 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '25 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '25 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '30 SENTADILLAS', exerciseId: 'squats', reps: '30 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '25 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '25 PASOS' },
+          { id: 8, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 9, name: '30 SENTADILLAS FINAL', exerciseId: 'squats', reps: '30 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'lower_intermedio',
+        levelKey: 'intermedio',
+        levelTitle: 'INTERMEDIO',
+        code: 'LOW-INTERMEDIO-09',
+        badgeColor: '#f59e0b',
+        badgeIcon: '🟡',
+        durationMinutes: 30,
+        xpReward: 480,
+        difficultyTag: 'COMBATE',
+        stations: [
+          { id: 1, name: '50 SENTADILLAS', exerciseId: 'squats', reps: '50 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '50 SENTADILLAS', exerciseId: 'squats', reps: '50 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '50 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '50 PASOS' },
+          { id: 8, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 9, name: '50 SENTADILLAS FINAL', exerciseId: 'squats', reps: '50 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'lower_master',
+        levelKey: 'master',
+        levelTitle: 'MASTER',
+        code: 'LOW-MASTER-09',
+        badgeColor: '#ef4444',
+        badgeIcon: '🔴',
+        durationMinutes: 40,
+        xpReward: 650,
+        difficultyTag: 'SPECOPS ÉLITE',
+        stations: [
+          { id: 1, name: '75 SENTADILLAS', exerciseId: 'squats', reps: '75 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '75 SENTADILLAS', exerciseId: 'squats', reps: '75 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '75 PASO GRANJERO', exerciseId: 'farmers_walk', reps: '75 PASOS' },
+          { id: 8, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 9, name: '75 SENTADILLAS FINAL', exerciseId: 'squats', reps: '75 REPETICIONES' }
+        ]
+      }
     ]
   },
   {
-    id: 'core_routine',
-    title: 'ENTRENAMIENTO CORE BLINDADO',
-    code: 'CORE-SHIELD-08',
-    category: 'core',
-    difficulty: 'INTENSO',
-    durationMinutes: 25,
-    xpReward: 400,
-    description: 'Blindaje abdominal y resistencia lumbar para soporte de combate.',
+    id: 'core',
+    title: 'CORE BLINDADO',
     badge: '🔰',
-    stations: [
-      { id: 1, name: '60 ABDOMINALES', exerciseId: 'situps', reps: '60 REPETICIONES' },
-      { id: 2, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 3, name: '60s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '60 SEGUNDOS' },
-      { id: 4, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 5, name: '60 ABDOMINALES', exerciseId: 'situps', reps: '60 REPETICIONES' },
-      { id: 6, name: '200 METROS SPRINT', exerciseId: 'sprint_200m', reps: '200 METROS' },
-      { id: 7, name: '60s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '60 SEGUNDOS' },
-      { id: 8, name: '20 BURPEES FINALES', exerciseId: 'burpees', reps: '20 REPETICIONES' }
+    category: 'core',
+    description: 'Blindaje abdominal y potencia lumbar en 3 niveles de exigencia.',
+    levels: [
+      {
+        id: 'core_principiante',
+        levelKey: 'principiante',
+        levelTitle: 'PRINCIPIANTE',
+        code: 'CORE-PRINCIPIANTE-08',
+        badgeColor: '#22c55e',
+        badgeIcon: '🟢',
+        durationMinutes: 18,
+        xpReward: 280,
+        difficultyTag: 'INICIACIÓN',
+        stations: [
+          { id: 1, name: '30 ABDOMINALES', exerciseId: 'situps', reps: '30 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '30s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '30 SEGUNDOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '30 ABDOMINALES', exerciseId: 'situps', reps: '30 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '30s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '30 SEGUNDOS' },
+          { id: 8, name: '10 BURPEES FINALES', exerciseId: 'burpees', reps: '10 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'core_intermedio',
+        levelKey: 'intermedio',
+        levelTitle: 'INTERMEDIO',
+        code: 'CORE-INTERMEDIO-08',
+        badgeColor: '#f59e0b',
+        badgeIcon: '🟡',
+        durationMinutes: 25,
+        xpReward: 400,
+        difficultyTag: 'COMBATE',
+        stations: [
+          { id: 1, name: '50 ABDOMINALES', exerciseId: 'situps', reps: '50 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '45s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '45 SEGUNDOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '50 ABDOMINALES', exerciseId: 'situps', reps: '50 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '45s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '45 SEGUNDOS' },
+          { id: 8, name: '18 BURPEES FINALES', exerciseId: 'burpees', reps: '18 REPETICIONES' }
+        ]
+      },
+      {
+        id: 'core_master',
+        levelKey: 'master',
+        levelTitle: 'MASTER',
+        code: 'CORE-MASTER-08',
+        badgeColor: '#ef4444',
+        badgeIcon: '🔴',
+        durationMinutes: 35,
+        xpReward: 600,
+        difficultyTag: 'SPECOPS ÉLITE',
+        stations: [
+          { id: 1, name: '75 ABDOMINALES', exerciseId: 'situps', reps: '75 REPETICIONES' },
+          { id: 2, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 3, name: '60s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '60 SEGUNDOS' },
+          { id: 4, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 5, name: '75 ABDOMINALES', exerciseId: 'situps', reps: '75 REPETICIONES' },
+          { id: 6, name: '100 METROS SPRINT', exerciseId: 'sprint_100m', reps: '100 METROS' },
+          { id: 7, name: '60s PLANCHA OPERATIVA', exerciseId: 'plank', reps: '60 SEGUNDOS' },
+          { id: 8, name: '25 BURPEES FINALES', exerciseId: 'burpees', reps: '25 REPETICIONES' }
+        ]
+      }
     ]
   }
 ];
